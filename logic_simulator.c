@@ -7,7 +7,7 @@
 int isnValid(int a);
 
 int main() {
-    int loop = 1;
+    char loop = 'C';
     int in1, in2, result, gate;
     while(loop) {
         printf("Select a gate to simulate:\n");
@@ -17,53 +17,63 @@ int main() {
             printf("Enter input: ");
             scanf("%d", &in1);
             if (isnValid(in1)) {
-                printf("Invalid input. Please enter 0 or 1.\n");
                 break;
             }
             else {
                 result = NOT(in1);
                 // add print truth table function
-            // printf("NOT %d = %d\n", in1, result);
+                // printf("NOT %d = %d\n", in1, result);
             } 
         }
         else if(gate >= 1 && gate <= 6) {
-            printf("Enter two inputs (0 or 1) separated by space: ");
-            scanf("%d %d", &in1, &in2);
-            switch(gate) {
-                case 1:
-                    result = AND(in1, in2);
-                    // add print truth table function
-                    //printf("%d AND %d = %d\n", in1, in2, result);
-                    break;
-                case 2:
-                    result = NAND(in1, in2);
-                    // add print truth table function
-                    //printf("%d NAND %d = %d\n", in1, in2, result);
-                    break;
-                case 3:
-                    result = OR(in1, in2);
-                    // add print truth table function
-                    //printf("%d OR %d = %d\n", in1, in2, result);
-                    break;
-                case 4:
-                    result = NOR(in1, in2);
-                    // add print truth table function
-                    //printf("%d NOR %d = %d\n", in1, in2, result);
-                    break;
-                case 5:
-                    result = XOR(in1, in2);
-                    // add print truth table function
-                    //printf("%d XOR %d = %d\n", in1, in2, result);
-                    break;
-                case 6:
-                    result = XNOR(in1, in2);
-                    // add print truth table function
-                    //printf("%d XNOR %d = %d\n", in1, in2, result);
-                    break;
+            printf("Enter two inputs: ");
+            scanf("%d\n %d\n", &in1, &in2);
+            if (isnValid(in1) || isnValid(in2)) {
+                break;
+            }
+            else {
+                switch(gate) {
+                    case 1:
+                        result = AND(in1, in2);
+                        // add print truth table function
+                        //printf("%d AND %d = %d\n", in1, in2, result);
+                        break;
+                    case 2:
+                        result = NAND(in1, in2);
+                        // add print truth table function
+                        //printf("%d NAND %d = %d\n", in1, in2, result);
+                        break;
+                    case 3:
+                        result = OR(in1, in2);
+                        // add print truth table function
+                        //printf("%d OR %d = %d\n", in1, in2, result);
+                        break;
+                    case 4:
+                        result = NOR(in1, in2);
+                        // add print truth table function
+                        //printf("%d NOR %d = %d\n", in1, in2, result);
+                        break;
+                    case 5:
+                        result = XOR(in1, in2);
+                        // add print truth table function
+                        //printf("%d XOR %d = %d\n", in1, in2, result);
+                        break;
+                    case 6:
+                        result = XNOR(in1, in2);
+                        // add print truth table function
+                        //printf("%d XNOR %d = %d\n", in1, in2, result);
+                        break;
+                }
             }
         }
         else {
-            printf("Invalid gate selection.\n");
+            printf("Invalid gate selection\n");
+        }
+        // ask user to continue
+        printf("Type 'Q' to quit, or 'C' to simulate another gate: ");
+        scanf("%d", &loop);
+        if(loop == 'Q' || loop == 'q') { // check for lowercase entry
+            break;
         }
     }
 }
@@ -71,5 +81,6 @@ int main() {
     function definitions
 */
 int isnValid(int a) {
+    printf("Invalid input. Please enter 0 or 1\n");
     return (a != 0 || a != 1);
 }
