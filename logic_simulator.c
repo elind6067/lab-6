@@ -4,7 +4,6 @@
 /*
     function prototypes
 */
-int isValid(int a);
 void printNOT();
 void printAND();
 void printNAND();
@@ -23,22 +22,20 @@ int main() {
         if(gate == 0) {
             printf("Enter input: ");
             scanf("%d", &in1);
-            if (isValid(in1) == 1) {
-                break;
-            }
-            else {
+            if(in1 == 0 || in1 == 1) { // check for valid input
                 result = NOT(in1);
                 printf("NOT %d = %d\n", in1, result);
                 printNOT();
-            } 
+            }
+            else {
+                printf("Invalid input. Please enter 0 or 1\n");
+                // restart loop
+            }
         }
         else if(gate >= 1 && gate <= 6) {
             printf("Enter two inputs: ");
             scanf("%d %d", &in1, &in2);
-            if (isValid(in1) == 1 || isValid(in2) == 1) {
-                break;
-            }
-            else {
+            if ((in1 == 0 || in1 == 1 ) && (in2 == 0 || in2 == 1)) { // check for valid input
                 switch(gate) {
                     case 1:
                         result = AND(in1, in2);
@@ -72,6 +69,9 @@ int main() {
                         break;
                 }
             }
+            else {
+                printf("Invalid input. Please enter 0 or 1\n");
+            }
         }
         else {
             printf("Invalid gate selection\n");
@@ -90,17 +90,7 @@ int main() {
 }
 /*
     function definitions
-*/
-int isValid(int a) {
-    if (a != 0 || a != 1) {
-        printf("Invalid input. Please enter 0 or 1\n");
-        return 0;
-    }
-    else {
-        return 1;
-    }
-}
-/*
+
     truth table print functions don't recalculate results for every input case,
     just print static tables to verify results
 */
