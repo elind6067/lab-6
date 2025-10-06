@@ -5,6 +5,13 @@
     function prototypes
 */
 int isnValid(int a);
+void printNOT();
+void printAND();
+void printNAND();
+void printOR();
+void printNOR();
+void printXOR();
+void printXNOR();
 
 int main() {
     char loop = 'C';
@@ -21,8 +28,8 @@ int main() {
             }
             else {
                 result = NOT(in1);
-                // add print truth table function
-                // printf("NOT %d = %d\n", in1, result);
+                printf("NOT %d = %d\n", in1, result);
+                printNOT();
             } 
         }
         else if(gate >= 1 && gate <= 6) {
@@ -35,33 +42,33 @@ int main() {
                 switch(gate) {
                     case 1:
                         result = AND(in1, in2);
-                        // add print truth table function
-                        //printf("%d AND %d = %d\n", in1, in2, result);
+                        printf("%d AND %d = %d\n", in1, in2, result);
+                        printAND();
                         break;
                     case 2:
                         result = NAND(in1, in2);
-                        // add print truth table function
-                        //printf("%d NAND %d = %d\n", in1, in2, result);
+                        printf("%d NAND %d = %d\n", in1, in2, result);
+                        printNAND();
                         break;
                     case 3:
                         result = OR(in1, in2);
-                        // add print truth table function
-                        //printf("%d OR %d = %d\n", in1, in2, result);
+                        printf("%d OR %d = %d\n", in1, in2, result);
+                        printOR();
                         break;
                     case 4:
                         result = NOR(in1, in2);
-                        // add print truth table function
-                        //printf("%d NOR %d = %d\n", in1, in2, result);
+                        printf("%d NOR %d = %d\n", in1, in2, result);
+                        printNOR();
                         break;
                     case 5:
                         result = XOR(in1, in2);
-                        // add print truth table function
-                        //printf("%d XOR %d = %d\n", in1, in2, result);
+                        printf("%d XOR %d = %d\n", in1, in2, result);
+                        printXOR();
                         break;
                     case 6:
                         result = XNOR(in1, in2);
-                        // add print truth table function
-                        //printf("%d XNOR %d = %d\n", in1, in2, result);
+                        printf("%d XNOR %d = %d\n", in1, in2, result);
+                        printXNOR();
                         break;
                 }
             }
@@ -98,7 +105,7 @@ void printNOT() {
     printf("0 |  1\n");
     printf("1 |  0\n");
 }
-void printAND(int a, int b, int result) {
+void printAND() {
     printf("AND Truth Table\n");
     printf("A | B | OUTPUT\n");
     printf("----------------\n");
