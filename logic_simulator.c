@@ -78,7 +78,7 @@ int main() {
         }
         // ask user to continue
         printf("Type 'Q' to quit, or 'C' to simulate another gate: ");
-        scanf("%d", &loop);
+        scanf("%c", &loop);
         if(loop == 'Q' || loop == 'q') { // check for lowercase entry
             break;
         }
