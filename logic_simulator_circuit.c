@@ -18,7 +18,7 @@ int main() {
     scanf("%d %d", &a, &b);
     if ((a == 0 || a == 1 ) && (b == 0 || b == 1)) { // check for valid input
         result = Circuit1(a, b);
-        printf("Circuit 1 with inputs a=%d and b=%d yields output: %d\n", a, b, result);
+        printf("Circuit 1 with inputs a = %d and b = %d yields output: %d\n", a, b, result);
     }
     else {
         printf("Invalid input. Please enter 0 or 1 for a and b\n");
@@ -27,7 +27,7 @@ int main() {
     scanf("%d %d", &a, &b);
     if ((a == 0 || a == 1 ) && (b == 0 || b == 1)) { // check for valid input
         result = Circuit2(a, b);
-        printf("Circuit 2 with inputs a=%d and b=%d yields output: %d\n", a, b, result);
+        printf("Circuit 2 with inputs a = %d and b = %d yields output: %d\n", a, b, result);
     }
     else {
         printf("Invalid input. Please enter 0 or 1 for a and b\n");
