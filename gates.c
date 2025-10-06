@@ -9,10 +9,10 @@ int NOT(int a) {
     return !a;
 }
 int AND(int a, int b) {
-    return a && b;
+    return (a && b);
 }
 int OR(int a, int b) {
-    return a || b;
+    return (a || b);
 }
 int NAND(int a, int b) {
     return !(a && b);
