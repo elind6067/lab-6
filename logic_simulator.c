@@ -75,6 +75,9 @@ int main() {
         if(loop == 'Q' || loop == 'q') { // check for lowercase entry
             break;
         }
+        else {
+            loop = 'C'; // reset loop variable in case of invalid entry
+        }
     }
 }
 /*
@@ -83,4 +86,69 @@ int main() {
 int isnValid(int a) {
     printf("Invalid input. Please enter 0 or 1\n");
     return (a != 0 || a != 1);
+}
+/*
+    truth table print functions don't recalculate results for every input case,
+    just print static tables to verify results
+*/
+void printNOT() {
+    printf("NOT Truth Table\n");
+    printf("A | OUTPUT\n");
+    printf("----------\n");
+    printf("0 |  1\n");
+    printf("1 |  0\n");
+}
+void printAND(int a, int b, int result) {
+    printf("AND Truth Table\n");
+    printf("A | B | OUTPUT\n");
+    printf("----------------\n");
+    printf("0 | 0 |  0\n");
+    printf("0 | 1 |  0\n");
+    printf("1 | 0 |  0\n");
+    printf("1 | 1 |  1\n");
+}
+void printNAND() {
+    printf("NAND Truth Table\n");
+    printf("A | B | OUTPUT\n");
+    printf("----------------\n");
+    printf("0 | 0 |  1\n");
+    printf("0 | 1 |  1\n");
+    printf("1 | 0 |  1\n");
+    printf("1 | 1 |  0\n");
+}
+void printOR() {
+    printf("OR Truth Table\n");
+    printf("A | B | OUTPUT\n");
+    printf("----------------\n");
+    printf("0 | 0 |  0\n");
+    printf("0 | 1 |  1\n");
+    printf("1 | 0 |  1\n");
+    printf("1 | 1 |  1\n");
+}
+void printNOR() {
+    printf("NOR Truth Table\n");
+    printf("A | B | OUTPUT\n");
+    printf("----------------\n");
+    printf("0 | 0 |  1\n");
+    printf("0 | 1 |  0\n");
+    printf("1 | 0 |  0\n");
+    printf("1 | 1 |  0\n");
+}
+void printXOR() {
+    printf("XOR Truth Table\n");
+    printf("A | B | OUTPUT\n");
+    printf("----------------\n");
+    printf("0 | 0 |  0\n");
+    printf("0 | 1 |  1\n");
+    printf("1 | 0 |  1\n");
+    printf("1 | 1 |  0\n");
+}
+void printXNOR() {
+    printf("XNOR Truth Table\n");
+    printf("A | B | OUTPUT\n");
+    printf("----------------\n");
+    printf("0 | 0 |  1\n");
+    printf("0 | 1 |  0\n");
+    printf("1 | 0 |  0\n");
+    printf("1 | 1 |  1\n");
 }
