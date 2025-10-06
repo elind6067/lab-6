@@ -4,7 +4,7 @@
 /*
     function prototypes
 */
-int isnValid(int a);
+int isValid(int a);
 void printNOT();
 void printAND();
 void printNAND();
@@ -23,7 +23,7 @@ int main() {
         if(gate == 0) {
             printf("Enter input: ");
             scanf("%d", &in1);
-            if (isnValid(in1)) {
+            if (isValid(in1) == 1) {
                 break;
             }
             else {
@@ -34,8 +34,8 @@ int main() {
         }
         else if(gate >= 1 && gate <= 6) {
             printf("Enter two inputs: ");
-            scanf("%d\n %d\n", &in1, &in2);
-            if (isnValid(in1) || isnValid(in2)) {
+            scanf("%d %d", &in1, &in2);
+            if (isValid(in1) == 1 || isValid(in2) == 1) {
                 break;
             }
             else {
@@ -77,7 +77,7 @@ int main() {
             printf("Invalid gate selection\n");
         }
         // ask user to continue
-        printf("Type 'Q' to quit, or 'C' to simulate another gate: ");
+        printf("Type 'Q' to quit, or ");
         scanf("%c", &loop);
         if(loop == 'Q' || loop == 'q') { // check for lowercase entry
             break;
@@ -91,9 +91,14 @@ int main() {
 /*
     function definitions
 */
-int isnValid(int a) {
-    printf("Invalid input. Please enter 0 or 1\n");
-    return (a != 0 || a != 1);
+int isValid(int a) {
+    if (a != 0 || a != 1) {
+        printf("Invalid input. Please enter 0 or 1\n");
+        return 0;
+    }
+    else {
+        return 1;
+    }
 }
 /*
     truth table print functions don't recalculate results for every input case,
