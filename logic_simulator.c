@@ -86,6 +86,7 @@ int main() {
             loop = 'C'; // reset loop variable in case of invalid entry
         }
     }
+    return 0;
 }
 /*
     function definitions
