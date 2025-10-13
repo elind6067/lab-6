@@ -34,3 +34,20 @@ int XNOR(int a, int b) {
         return 0;
     }
 }
+
+int AND_N(int arr[], int n) {
+    for (int i = 0; i < n; i++) {
+        if (arr[i] == 0) { // if there are any 0s, return 0
+            return 0;
+        }
+    }
+    return 1; // if all 1s, return 1
+}
+int OR_N(int arr[], int n) {
+    for (int i = 0; i < n; i++) {
+        if (arr[i] == 1) { // if there are any 1s, return 1
+            return 1;
+        }
+    }
+    return 0; // if all 0s, return 0
+}

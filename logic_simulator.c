@@ -4,9 +4,10 @@
     Ella Lind
     ECE 321L - 001
     Lab 6 - Logic Gate Simulator Part 1
-    10/6/2025
+    10/13/2025
     Description: This program simulates basic logic gates and prints their truth tables. 
     The user selects a gate and inputs values (0 or 1) to see the output and corresponding truth table.
+    Added AND_N and OR_N functions so program can handle n inuputs for AND and OR gates. 
 */
 /*
     function prototypes
