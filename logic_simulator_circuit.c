@@ -5,7 +5,7 @@
     ECE 321L - 001
     Lab 6 - Logic Gate Simulator Part 2
     10/6/2025
-    Description: This program simulates 2 circuits based on user input.
+    Description: This program simulates 2 circuits based on user input. 
 */
 
 // function prototypes
