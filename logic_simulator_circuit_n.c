@@ -44,13 +44,22 @@ int main() {
             A[i] = rand() % 2; // random 0 or 1
             B[i] = rand() % 2; 
         }
+        // print arrays so user can see inputs
+        printf("A: ");
+        for (int i = 0; i < n; i++) {
+            printf("%d ", A[i]);
+        }
+        printf("\nB: ");
+        for (int i = 0; i < n; i++) {
+            printf("%d ", B[i]);
+        }
     }
     else {
         printf("Invalid input. Please enter r or u\n");
     }
     result = CircuitN1(A, B);
     //result = CircuitN2(A, B);
-    printf("Result: %d\n", result);
+    printf("\nResult: %d\n", result);
     return 0;
 }
 
