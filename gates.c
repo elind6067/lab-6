@@ -51,3 +51,6 @@ int OR_N(int arr[], int n) {
     }
     return 0; // if all 0s, return 0
 }
+int BUFFER(int a) {
+    return a;
+}

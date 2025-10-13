@@ -12,4 +12,5 @@ int XOR(int a, int b);
 int XNOR(int a, int b);
 int AND_N(int arr[], int n);
 int OR_N(int arr[], int n);
+int BUFFER(int a);
 #endif // GATES_H  
