@@ -1,16 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "gates.h"
 
 /*
     Ella Lind
     ECE 321L - 001
-    Lab 6 - Logic Gate Simulator Part 4
-    11/03/2025
+    Lab 9 - Logic Gate Simulator Part 5
+    11/10/2025
     Description: This program simulates a circuit given a file with the circuit description and user inputs. 
     The first line of the file represents n gates, including user inputs and output, and each subsequent 
     line represents the order and operation of the gates.
     Uses a double linked list to store the circuit elements read from the file.
+    Updated to handle mutiple inputs for AND and OR gates, using AND_N and OR_N functions and an array of inputs.
 */
 
 /*
@@ -18,9 +20,9 @@
 */
 typedef struct dlist_tag {
     int index;        // gate index
-    char type;        // gate type character
-    int in1;          // input 1 
-    int in2;          // input 2 
+    char type;        // gate type 
+    int *inputs;         // input indices array
+    int nInputs;         // number of inputs
     int output;       // output
     struct dlist_tag *next;
     struct dlist_tag *prev;
@@ -35,7 +37,7 @@ typedef struct {
     function prototypes
 */
 void dlInit(dl *list);
-void dlInsert(dl *lp, int index, char type, int in1, int in2, int output);
+void dlInsert(dl *lp, int index, char type, int *inputs, int nInputs, int output);
 DListNode *dlFindNode(dl *lp, int index);
 void dlPrint(dl lp); // for testing purposes
 void dlFree(dl *lp);
@@ -45,10 +47,6 @@ int main(int argc, char *argv[]) {
     /*
         file handling
     */
-    if (argc != 2) {
-        printf("Usage: %s <circuit_file>\n", argv[0]);
-        return 1;
-    }
     FILE *file = fopen(argv[1], "r"); // open file as read only
     if (file == NULL) {
         printf("Error opening file: %s\n", argv[1]);
@@ -70,22 +68,48 @@ int main(int argc, char *argv[]) {
     /*
         read circuit description from file
     */
-    char line[256]; // char array (string) for reading lines
+    char line[256]; // char array for reading lines
     fgets(line, sizeof(line), file);
 
     int linesRead = 0;
-    while (!feof(file) && linesRead < nGates) {
-        if (fgets(line, sizeof(line), file) == NULL) 
-            break;
-        linesRead++;
-        int idx = 0, in1 = 0, in2 = 0;
-        char gtype = '\0'; // return char, separated by spaces
-        if (sscanf(line, "%d: %c %d %d", &idx, &gtype, &in1, &in2) < 2) {
+    while (linesRead < nGates && fgets(line, sizeof(line), file) != NULL) {
+        int gindex = 0;
+        char gtype = '\0';
+        int nonInputs = 0;
+        // get the gate index and type, and the number of characters that are not inputs
+        if (sscanf(line, " %d %c %n", &gindex, &gtype, &nonInputs) < 2) {
+            // skip empty line
             continue;
         }
 
-    // insert gates into linked list with output = -1 (temporary)
-        dlInsert(&circuit, idx, gtype, in1, in2, -1);
+        int temp[64]; // empty array for input indicies, can handle 64 inputs
+        int nInputs = 0;
+        char *p = line + nonInputs; // line address + the offset from the gate index and type
+        int added = 0;
+        int inputValue = 0;
+        while (sscanf(p, " %d %n", &inputValue, &added) == 1) {
+            if (nInputs < 64){
+                temp[nInputs++] = inputValue; // add the input value to the next address in temp
+            }
+            p += added; // also move pointer to the next input by the size of an integer
+        }
+
+        int *inPointer = NULL; // new array for inputs
+        if (nInputs > 0) {
+            inPointer = malloc(nInputs * sizeof(int));
+            if (!inPointer) {
+                printf("Memory allocation failed\n");
+                dlFree(&circuit);
+                fclose(file);
+                return 1;
+            }
+            for (int k = 0; k < nInputs; k++) {
+                inPointer[k] = temp[k]; // put the temp values into the input array
+            } 
+        }
+
+        dlInsert(&circuit, gindex, gtype, inPointer, nInputs, -1);
+        linesRead++;
     }
 
     /*
@@ -96,110 +120,131 @@ int main(int argc, char *argv[]) {
     while (current != NULL) {
         if (current->type == 'I') { // user input gates
             // prompt for input value and store in node
-            int val = -1;
+            int value = -1;
             int read = 1;
             while (read) {
                 printf("Enter value for input gate %d (0 or 1): ", current->index);
-                if (scanf("%d", &val) != read) {
+                if (scanf("%d", &value) != read) {
                     int c;
                     while ((c = getchar()) != '\n' && c != EOF) { // error handling 
-                        printf("Please enter 0 or 1.\n");
+                        printf("Please enter 0 or 1\n");
                         continue;
-                    }       
+                    }
+                    linesRead++;
                 }
-                if (val == 0 || val == 1) break;
-                printf("Please enter 0 or 1.\n");
+                if (value == 0 || value == 1) {
+                    break;
+                }
+                printf("Please enter 0 or 1\n");
             }
-            current->output = val; // output is user input value
+            current->output = value; // output is user input value
             current = current->next; // move to next node
             continue;
         }
         if (current->type != 'I') { // non input gates
-            int val1 = 0, val2 = 0; // temporary variables to hold old input values
-            DListNode *n1 = NULL; // temporary pointers for current->in1, in2
-            DListNode *n2 = NULL;
-            switch (current->type) {
-                case 'N':
-                    n1 = dlFindNode(&circuit, current->in1); // temp pointer assigned to node returned by dlFindNode (if in1 matches)
+            int out = 0;
+            if (current->type == 'N') {
+                int input = 0;
+                if (current->nInputs > 0) {
+                    DListNode *n1 = dlFindNode(&circuit, current->inputs[0]);
                     if (n1 != NULL) {
-                            val1 = n1->output; // current->output stored in val
-                        } 
+                        input = n1->output; // only need 1 input
+                    } 
                     else {
-                            val1 = 0; // only has one input 'gate', default 0
+                        input = 0;
+                    }
+                }
+                out = NOT(input);
+            } 
+            else if (current->type == 'A') {
+                int *inputs = NULL; // new local inputs array for gate type
+                if (current->nInputs > 0) {
+                    inputs = malloc(current->nInputs * sizeof(int));
+                    if (!inputs) {
+                        printf("Memory allocation failed\n"); 
+                        dlFree(&circuit); 
+                        fclose(file); 
+                        return 1; 
+                    }
+                    for (int k = 0; k < current->nInputs; k++) {
+                        DListNode *n = dlFindNode(&circuit, current->inputs[k]);
+                        if (n != NULL) {
+                            inputs[k] = n->output; // output of gate at specified index k becomes input for the AND_N gate
                         }
-                    current->output = NOT(val1); // result of gate operation replaces old current->output (n1->output)
-                    break;
-                case 'A':
-                    n1 = dlFindNode(&circuit, current->in1);
-                    n2 = dlFindNode(&circuit, current->in2);
-                    if (n1 != NULL) {
-                        val1 = n1->output;
-                    } 
-                    else {
-                        val1 = 0;
+                        else {
+                            inputs[k] = 0; // otherwise default to 0 because anything AND 0 is 0
+                        }
                     }
-                    if (n2 != NULL) {
-                        val2 = n2->output;
-                    } 
-                    else {
-                        val2 = 0;
+                }
+                out = AND_N(inputs, current->nInputs);
+                free(inputs); // free memory
+            } 
+            else if (current->type == 'O') {
+                int *inputs = NULL;
+                if (current->nInputs > 0) {
+                    inputs = malloc(current->nInputs * sizeof(int));
+                    if (!inputs) { 
+                        printf("Memory allocation failed\n"); 
+                        dlFree(&circuit); 
+                        fclose(file); 
+                        return 1; 
                     }
-                    current->output = AND(val1, val2);
-                    break;
-                case 'O':
-                    n1 = dlFindNode(&circuit, current->in1);
-                    n2 = dlFindNode(&circuit, current->in2);
-                    if (n1 != NULL) {
-                        val1 = n1->output;
-                    } 
-                    else {
-                        val1 = 0;
+                    for (int k = 0; k < current->nInputs; k++) {
+                        DListNode *n = dlFindNode(&circuit, current->inputs[k]);
+                        if (n != NULL) {
+                            inputs[k] = n->output;
+                        }
+                        else {
+                            inputs[k] = 0;
+                        }
                     }
-                    if (n2 != NULL) {
-                        val2 = n2->output;
-                    } 
-                    else {
-                        val2 = 0;
-                    }
-                    current->output = OR(val1, val2);
-                    break;
-                case 'X':
-                    n1 = dlFindNode(&circuit, current->in1);
-                    n2 = dlFindNode(&circuit, current->in2);
-                    if (n1 != NULL) {
-                        val1 = n1->output;
-                    } 
-                    else {
-                        val1 = 0;
-                    }
-                    if (n2 != NULL) {
-                        val2 = n2->output;
-                    } 
-                    else {
-                        val2 = 0;
-                    }
-                    current->output = XOR(val1, val2);
-                    break;
-                case 'Q':
-                    n1 = dlFindNode(&circuit, current->in1);
-                    if (n1 != NULL) {
-                        val1 = n1->output;
-                    } 
-                    else {
-                        val1 = 0;
-                    }
-                    current->output = BUFFER(val1); // use buffer gate for output, does not change
-                    break;
-                default: // error handling for unknown gate types
-                    printf("Unknown gate type '%c' at index %d\n", current->type, current->index);
-                    current->output = 0;
-                    break;
+                }
+                if (current->nInputs > 0) {
+                    out = OR_N(inputs, current->nInputs);
+                } 
+                else {
+                    out = OR_N(NULL, 0); // handle 0 inputs case
+                }
+                free(inputs);
             }
+            else if (current->type == 'X') {
+                int value = 0;
+                int input = 0;
+                for (int k = 0; k < current->nInputs; k++) {
+                    DListNode *n = dlFindNode(&circuit, current->inputs[k]);
+                    if (n != NULL) {
+                        input = n->output;
+                    }
+                    else {
+                        input = 0;
+                    }
+                    value = XOR(value, input); // XOR old input with new input
+                }
+                out = value;
+            } 
+            else if (current->type == 'Q') {
+                int input = 0;
+                if (current->nInputs > 0) {
+                    DListNode *n1 = dlFindNode(&circuit, current->inputs[0]);
+                    if (n1 != NULL) {
+                        input = n1->output;
+                    }
+                    else {
+                        input = 0;
+                    }
+                }
+                out = BUFFER(input);
+            } 
+            else {
+                printf("Unknown gate type");
+                out = 0;
+            }
+            current->output = out; // otherwise output for non input gate is 0
         }
         current = current->next; // move to next node
     }
 
-    // print results from the linked list
+    // print results from the linked list for testing purposes
     printf("Gate outputs:\n");
     dlPrint(circuit);
 
@@ -207,13 +252,15 @@ int main(int argc, char *argv[]) {
     if (circuit.last != NULL) {
         printf("Final output (gate %d) = %d\n", circuit.last->index, circuit.last->output);
     }
-    // clean up linked list
+    // clear linked list
     dlFree(&circuit);
     fclose(file);
     return 0;
 }
 
-// functions
+/*
+    functions
+*/
 void dlPrint(dl lp) {
     DListNode *current = lp.first;
     while (current != NULL) {
@@ -226,6 +273,7 @@ void dlFree(dl *lp) {
     DListNode *current = lp->first;
     while (current != NULL) { // clears the whole list
         DListNode *next = current->next;
+        if (current->inputs != NULL) free(current->inputs);
         free(current);
         current = next;
     }
@@ -236,15 +284,19 @@ void dlInit(dl *list) {
     list->first = NULL;
     list->last = NULL;
 }
-void dlInsert(dl *lp, int index, char type, int in1, int in2, int output) {
+void dlInsert(dl *lp, int index, char type, int *inputs, int nInputs, int output) {
     DListNode *node = (DListNode *)malloc(sizeof(DListNode));
-    if (!node) return; // empty list
+    if (!node) {
+        if (inputs) free(inputs);
+        return; // allocation failed
+    }
+    // initialize
     node->index = index;
     node->type = type;
-    node->in1 = in1;
-    node->in2 = in2;
+    node->inputs = inputs;
+    node->nInputs = nInputs;
     node->output = output;
-    node->next = NULL; // initialize
+    node->next = NULL; 
     node->prev = NULL;
     if (lp->last == NULL) {
         lp->first = node;
